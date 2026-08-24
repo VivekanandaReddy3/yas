@@ -1,0 +1,23 @@
+name: CI
+
+# Walking skeleton: prove the pipeline runs end-to-end before adding the real work.
+# Next steps (separate issues): pin the toolchain in a container, then run `make test`.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Install SWI-Prolog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y swi-prolog
+
+      - name: Confirm the toolchain is available
+        run: swipl --version
