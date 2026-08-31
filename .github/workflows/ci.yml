@@ -1,23 +1,43 @@
 name: CI
 
-# Walking skeleton: prove the pipeline runs end-to-end before adding the real work.
-# Next steps (separate issues): pin the toolchain in a container, then run `make test`.
+# Stage 1 (now): run Ueber's verification on every push and REPORT the state.
+#   - installs the toolchain, runs `make test`, prints a summary, archives the log.
+#   - the job stays green because at this stage CI's role is to run + report, not gate.
+# Next issues: pin the toolchain in a container (#3), then make CI GATE on the result (#4).
 
 on:
   push:
   pull_request:
 
 jobs:
-  smoke:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install SWI-Prolog
         run: |
           sudo apt-get update
           sudo apt-get install -y swi-prolog
+          swipl --version
 
-      - name: Confirm the toolchain is available
-        run: swipl --version
+      - name: Run Ueber verification (make test)
+        continue-on-error: true
+        run: |
+          make test | tee ueber-verification.log
+
+      - name: Report summary
+        run: |
+          echo "==================== YAS / Ueber verification ===================="
+          echo "--- scale collected ---"
+          grep -E "^[0-9]+ (languages|files|functions|function applications)\.|membership tests\." ueber-verification.log | tail -6 || true
+          echo "--- languages failing to load on this toolchain (the 2016->modern gap) ---"
+          grep -E "ERROR:" ueber-verification.log | grep -oE "languages/[A-Za-z]+/" | sort -u || echo "  none"
+          echo "=================================================================="
+
+      - name: Archive the full verification log
+        uses: actions/upload-artifact@v4
+        with:
+          name: ueber-verification-log
+          path: ueber-verification.log
