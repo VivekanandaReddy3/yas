@@ -5,7 +5,7 @@ pp(Ds, T) :-
     pplRender:render(vlist(Bs), T).
 
 % Lists of declarations
-[] => [].
+[] => [] :- true.
 [D|Ds] => [B|Bs] :-
     D => B,
     Ds => Bs.
@@ -32,13 +32,13 @@ axiom([N], F) => B3 :-
     decl(axiom, N, B1),
     F => B2,
     axiom(B1, B2, B3).
-link(N, U) => hlist([text(link), indent(text(N)), indent(text(to)), indent(text('\'')), text(U), text('\'') ]).
-ref(N) => text(N).
+link(N, U) => hlist([text(link), indent(text(N)), indent(text(to)), indent(text('\'')), text(U), text('\'') ]) :- true.
+ref(N) => text(N) :- true.
 star(TE) => hbox(B, text('*')) :- TE => B.
 product(TEs) => hlist([text('('), B, text(')')]) :-
     texprs(TEs, B).
-total => text(' -> ').
-partial => text(' ~> ').
+total => text(' -> ') :- true.
+partial => text(' ~> ') :- true.
 forall(V, TE, F) => B :-
     quantifier(forall, V, '<-', TE, F, B).
 foreach(V, T, F) => B :-
@@ -47,7 +47,7 @@ exists(V, TE, F) => B :-
     quantifier(exists, V, '<-', TE, F, B).
 existsu(V, TE, F) => B :-
     quantifier('exists!', V, '<-', TE, F, B).
-bindv(V) => text(V).
+bindv(V) => text(V) :- true.
 bindt(Vs) => B :-
     commaparens(Vs, B).
 relapp(N, Ts) => hbox(text(N), B) :-
@@ -74,7 +74,7 @@ ifthen(F1, F2) => hlist([B1, indent(text('=>')), indent(B2)]) :-
     formulaparens(F2, B2).
 funapp(N, Ts) => hbox(text(N), B) :-
     commaparens(Ts, B).
-var(N) => text(N).
+var(N) => text(N) :- true.
 
 % Factored helpers
 decl(K, N, hbox(text(K), indent(text(N)))).
