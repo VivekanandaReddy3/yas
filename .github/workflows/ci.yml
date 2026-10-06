@@ -29,12 +29,16 @@ jobs:
 
       - name: Run Ueber verification
         run: |
-          docker run --rm -v "$PWD/out:/out" yas:${{ matrix.swi }} \
-            bash .github/ci/ueber-verify.sh /out/ueber-verification.log
+          docker run --rm -e GITHUB_SHA -v "$PWD/out:/out" yas:${{ matrix.swi }} \
+            bash .github/ci/ueber-verify.sh /out
 
-      - name: Archive the verification log
+      - name: Publish the report on the run page
+        if: always()
+        run: cat out/ueber-report.md >> "$GITHUB_STEP_SUMMARY" || echo "no report produced"
+
+      - name: Archive the log and the report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ueber-verification-swi-${{ matrix.swi }}
-          path: out/ueber-verification.log
+          path: out/
