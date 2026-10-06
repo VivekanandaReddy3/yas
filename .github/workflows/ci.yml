@@ -1,43 +1,40 @@
 name: CI
 
-# Stage 1 (now): run Ueber's verification on every push and REPORT the state.
-#   - installs the toolchain, runs `make test`, prints a summary, archives the log.
-#   - the job stays green because at this stage CI's role is to run + report, not gate.
-# Next issues: pin the toolchain in a container (#3), then make CI GATE on the result (#4).
+# Run Ueber's verification in the pinned container (Dockerfile) on every push
+# and pull request, and fail if anything breaks (.github/ci/ueber-verify.sh).
+# The matrix runs the same check on further SWI-Prolog versions:
+#   7.6.4   oldest swipl image available (the repository targets 7.2.3)
+#   9.3.35  last 9.x image
+#   10.0.2  the pinned version (Dockerfile default)
 
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   verify:
+    name: Ueber verification (SWI-Prolog ${{ matrix.swi }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        swi: ["7.6.4", "9.3.35", "10.0.2"]
     steps:
       - name: Check out the repository
         uses: actions/checkout@v5
 
-      - name: Install SWI-Prolog
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y swi-prolog
-          swipl --version
+      - name: Build the container
+        run: docker build --build-arg SWI_VERSION=${{ matrix.swi }} -t yas:${{ matrix.swi }} .
 
-      - name: Run Ueber verification (make test)
-        continue-on-error: true
+      - name: Run Ueber verification
         run: |
-          make test | tee ueber-verification.log
+          docker run --rm -v "$PWD/out:/out" yas:${{ matrix.swi }} \
+            bash .github/ci/ueber-verify.sh /out/ueber-verification.log
 
-      - name: Report summary
-        run: |
-          echo "==================== YAS / Ueber verification ===================="
-          echo "--- scale collected ---"
-          grep -E "^[0-9]+ (languages|files|functions|function applications)\.|membership tests\." ueber-verification.log | tail -6 || true
-          echo "--- languages failing to load on this toolchain (the 2016->modern gap) ---"
-          grep -E "ERROR:" ueber-verification.log | grep -oE "languages/[A-Za-z]+/" | sort -u || echo "  none"
-          echo "=================================================================="
-
-      - name: Archive the full verification log
+      - name: Archive the verification log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ueber-verification-log
-          path: ueber-verification.log
+          name: ueber-verification-swi-${{ matrix.swi }}
+          path: out/ueber-verification.log
