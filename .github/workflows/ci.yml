@@ -42,3 +42,45 @@ jobs:
         with:
           name: ueber-verification-swi-${{ matrix.swi }}
           path: out/
+
+  publish:
+    name: Publish the verification report
+    needs: verify
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/thesis/setup'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the repository with its history
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Fetch the report of the pinned toolchain
+        uses: actions/download-artifact@v4
+        with:
+          name: ueber-verification-swi-10.0.2
+          path: out
+
+      - name: Check out the gh-pages branch
+        run: |
+          if git fetch origin gh-pages; then
+            git worktree add site FETCH_HEAD --detach
+          else
+            git worktree add site --detach
+            git -C site checkout --orphan gh-pages
+            git -C site rm -rfq .
+          fi
+
+      - name: Build the page
+        run: python3 .github/ci/health-page.py out site
+
+      - name: Push the page
+        run: |
+          cd site
+          touch .nojekyll
+          git add -A
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Report for ${GITHUB_SHA::7}" || exit 0
+          git push origin HEAD:gh-pages

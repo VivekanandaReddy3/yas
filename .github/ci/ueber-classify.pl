@@ -9,6 +9,8 @@
 %   checked          a real check in Prolog runs
 %   partly_checked   as checked, and further foreign checks are skipped
 %   skipped          only foreign checks exist, so nothing runs
+%   loaded           only succeed, but Prolog sources are consulted at start-up,
+%                    and a load error fails the run
 %   parsed_only      only succeed, but reading parses the file (term, json, xml)
 %   read_only        only succeed, and reading the text file is the whole check
 %   declaration      nothing to run (language, function, ...), or checked by the
@@ -16,23 +18,25 @@
 %
 % Usage (after main.pro has loaded everything, without running verification):
 %   swipl -q -f main.pro -g "['.github/ci/ueber-classify.pl'],classify('FILE'),halt" -- session
-% Writes one line per declaration, in verification order: CLASS<TAB>DECLARATION
+% Writes one line per declaration, in verification order:
+%   CLASS<TAB>DIRECTORY<TAB>DECLARATION
 
 classify(File) :-
     findall(D, udeclaration(D, _), Ds),
+    findall(Dir, udeclaration(_, Dir), Dirs),
     setup_call_cleanup(
         open(File, write, S),
-        write_classes(Ds, Ds, S),
+        write_classes(Ds, Dirs, Ds, S),
         close(S)).
 
 % An explicit loop, because YAS defines its own forall/2 as a macro
 % (languages/Ueber/macros/forall.pro), which hides the built-in one.
-write_classes([], _, _).
-write_classes([D|Rest], Ds, S) :-
-    (   class(Ds, D, C) -> format(S, "~w\t~q~n", [C, D])
+write_classes([], [], _, _).
+write_classes([D|Rest], [Dir|Dirs], Ds, S) :-
+    (   class(Ds, D, C) -> format(S, "~w\t~w\t~q~n", [C, Dir, D])
     ;   throw(error(unclassified(D), _))
     ),
-    write_classes(Rest, Ds, S).
+    write_classes(Rest, Dirs, Ds, S).
 
 class(Ds, elementOf(F, L), declaration) :- member(notElementOf(F, L), Ds), !.
 class(Ds, elementOf(_, L), C) :- !,
@@ -52,6 +56,7 @@ tests_class(L, Ps, C) :-
     (   Real \== [], Foreign \== [] -> C = partly_checked
     ;   Real \== [] -> C = checked
     ;   Foreign \== [] -> C = skipped
+    ;   languageTowardsBase(L, prolog(text)) -> C = loaded
     ;   languageToBase(L, text) -> C = read_only
     ;   C = parsed_only
     ).

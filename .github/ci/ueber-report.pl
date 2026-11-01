@@ -50,15 +50,15 @@ read_lines_(S, Lines) :-
     read_line_to_string(S, L),
     ( L == end_of_file -> Lines = [] ; Lines = [L|Ls], read_lines_(S, Ls) ).
 
-% CLASS<TAB>DECLARATION lines
+% CLASS<TAB>DIRECTORY<TAB>DECLARATION lines
 read_classes(File, Classes) :-
     (   exists_file(File) -> read_lines(File, Lines) ; Lines = [] ),
     maplist(class_line, Lines, Classes).
 
 class_line(L, D-C) :-
-    once(sub_string(L, B, 1, A, "\t")),
-    sub_string(L, 0, B, _, C),
-    sub_string(L, _, A, 0, D).
+    split_string(L, "\t", "", [C, _Dir|Parts]),
+    atomic_list_concat(Parts, '\t', A),
+    atom_string(A, D).
 
 % Assign each line to the section it occurs in.
 sections([], _, []).
@@ -114,13 +114,14 @@ assurance(VR, Classes, Dict, Matches) :-
     count(Passed, "checked", Checked),
     count(Passed, "partly_checked", Partly),
     count(Passed, "skipped", Skipped),
+    count(Passed, "loaded", Loaded),
     count(Passed, "parsed_only", Parsed),
     count(Passed, "read_only", Read),
     count(Passed, "declaration", Decl),
     length(Left, NotRun),
     length(Classes, Total),
     Dict = _{ checked: Checked, partly_checked: Partly, skipped: Skipped,
-              parsed_only: Parsed, read_only: Read, declaration: Decl,
+              loaded: Loaded, parsed_only: Parsed, read_only: Read, declaration: Decl,
               failed: Failed, not_run: NotRun, total: Total }.
 
 walk([], Left, [], 0, Left, true).
@@ -238,6 +239,7 @@ markdown(S, R) :-
     format(S, "| Really checked | ~w |~n", [As.checked]),
     format(S, "| Really checked, some foreign checks skipped | ~w |~n", [As.partly_checked]),
     format(S, "| Skipped: foreign (Java, Python, Haskell) checks only, nothing ran | ~w |~n", [As.skipped]),
+    format(S, "| Prolog source loaded, nothing else checked | ~w |~n", [As.loaded]),
     format(S, "| File parsed, nothing else checked | ~w |~n", [As.parsed_only]),
     format(S, "| File read, nothing else checked | ~w |~n", [As.read_only]),
     format(S, "| Declaration only, nothing to run | ~w |~n", [As.declaration]),
