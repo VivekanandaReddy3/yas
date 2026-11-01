@@ -20,12 +20,17 @@ Collection completes:
 397 function applications.
 ```
 
-**Megamodel well-formedness checking and verification never run.** Right after
-collection, reading `languages/DDL/cs.term` raises a syntax error, the final
-directive in `main.pro` fails, `halt` is never reached, and `swipl` drops into
-its interactive toplevel. Run from a terminal, the process therefore waits for
-input indefinitely; the run above was stopped by hand (hence the trailing
-`make: *** [test] Terminated: 15`).
+**Verification stops partway.** Well-formedness checking completes, but during
+verification, reading `languages/DDL/cs.term` raises a syntax error, the final directive
+in `main.pro` fails, `halt` is never reached, and `swipl` drops into its interactive
+toplevel. Run from a terminal, the process therefore waits for input indefinitely; the
+run above was stopped by hand (hence the trailing `make: *** [test] Terminated: 15`).
+With stdin closed, `swipl` exits with status 0.
+
+Repeating the run in verbose mode on the same commit shows how far it gets: all 2660
+relationship checks pass well-formedness. In verification, 839 pass, 1 fails
+(`mapsTo(mapping, small-world.term, small-world.tree)` in BL), and the run stops at the
+next check, leaving about 1820 unchecked.
 
 Load errors reported during collection:
 
