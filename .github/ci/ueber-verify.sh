@@ -3,11 +3,13 @@
 #
 # Ueber runs in verbose mode, which prints the outcome of every relationship
 # in both phases (well-formedness: OK/FAIL, verification: VERIFIED/FAIL).
-# ueber-report.pl turns that log into ueber-report.json and ueber-report.md
-# and decides the result; see there for what counts as a failure.
+# ueber-classify.pl records what each check actually does (see there), and
+# ueber-report.pl combines both into ueber-report.json and ueber-report.md and
+# decides the result; see there for what counts as a failure.
 #
 # Usage: ueber-verify.sh [OUTDIR]   (default: current directory)
-# Writes OUTDIR/ueber-verification.log, ueber-report.json, ueber-report.md.
+# Writes OUTDIR/ueber-verification.log, ueber-classes.tsv, ueber-report.json,
+# ueber-report.md.
 
 set -u
 out="${1:-.}"
@@ -23,4 +25,8 @@ swipl -q -f main.pro -- verbose < /dev/null > "$log" 2>&1
 status=$?
 seconds=$(( $(date +%s) - start ))
 
-swipl "$here/ueber-report.pl" "$log" "$status" "$seconds" "$out"
+classes="$out/ueber-classes.tsv"
+swipl -q -f main.pro -g "['$here/ueber-classify.pl'],classify('$classes'),halt" -- session \
+  < /dev/null > "$out/ueber-classify.log" 2>&1
+
+swipl "$here/ueber-report.pl" "$log" "$status" "$seconds" "$out" "$classes"

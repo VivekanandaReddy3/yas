@@ -1,11 +1,12 @@
 % Turn the log of a verbose Ueber run (swipl -q -f main.pro -- verbose) into
 % a pass/fail report: a JSON file for tools and a Markdown summary for people.
 %
-% Usage: swipl ueber-report.pl LOG STATUS SECONDS OUTDIR
+% Usage: swipl ueber-report.pl LOG STATUS SECONDS OUTDIR CLASSES
 %   LOG      log of the verbose run (stdout and stderr)
 %   STATUS   exit status of that run
 %   SECONDS  duration of that run
 %   OUTDIR   where ueber-report.json and ueber-report.md are written
+%   CLASSES  output of ueber-classify.pl: what each check actually does
 % Exits with 0 if the run passed and 1 otherwise.
 %
 % The run fails if swipl exited non-zero, if an error was reported, if the
@@ -29,11 +30,12 @@
 :- initialization(main, main).
 
 main :-
-    current_prolog_flag(argv, [Log, StatusA, SecondsA, OutDir|_]),
+    current_prolog_flag(argv, [Log, StatusA, SecondsA, OutDir, ClassFile|_]),
     atom_number(StatusA, Status),
     atom_number(SecondsA, Seconds),
     read_lines(Log, Lines),
-    analyse(Lines, Status, Seconds, Report),
+    read_classes(ClassFile, Classes),
+    analyse(Lines, Classes, Status, Seconds, Report),
     directory_file_path(OutDir, 'ueber-report.json', JsonFile),
     directory_file_path(OutDir, 'ueber-report.md', MdFile),
     setup_call_cleanup(open(JsonFile, write, J),
@@ -47,6 +49,16 @@ read_lines(File, Lines) :-
 read_lines_(S, Lines) :-
     read_line_to_string(S, L),
     ( L == end_of_file -> Lines = [] ; Lines = [L|Ls], read_lines_(S, Ls) ).
+
+% CLASS<TAB>DECLARATION lines
+read_classes(File, Classes) :-
+    (   exists_file(File) -> read_lines(File, Lines) ; Lines = [] ),
+    maplist(class_line, Lines, Classes).
+
+class_line(L, D-C) :-
+    once(sub_string(L, B, 1, A, "\t")),
+    sub_string(L, 0, B, _, C),
+    sub_string(L, _, A, 0, D).
 
 % Assign each line to the section it occurs in.
 sections([], _, []).
@@ -95,7 +107,34 @@ errors(Lines, Errors) :-
     exclude(continuation, Es0, Errors).
 continuation(E) :- string_concat("ERROR:    ", _, E).
 
-analyse(Lines, Status, Seconds, Report) :-
+% Combine run results and classes, check by check, in verification order.
+% Passed checks count under their class; the classes must match the run.
+assurance(VR, Classes, Dict, Matches) :-
+    walk(VR, Classes, Passed, Failed, Left, Matches),
+    count(Passed, "checked", Checked),
+    count(Passed, "partly_checked", Partly),
+    count(Passed, "skipped", Skipped),
+    count(Passed, "parsed_only", Parsed),
+    count(Passed, "read_only", Read),
+    count(Passed, "declaration", Decl),
+    length(Left, NotRun),
+    length(Classes, Total),
+    Dict = _{ checked: Checked, partly_checked: Partly, skipped: Skipped,
+              parsed_only: Parsed, read_only: Read, declaration: Decl,
+              failed: Failed, not_run: NotRun, total: Total }.
+
+walk([], Left, [], 0, Left, true).
+walk([_|_], [], [], 0, [], false).
+walk([D1-S|Rs], [D2-C|Cs], Passed, Failed, Left, Matches) :-
+    (   D1 == D2 -> M = true ; M = false ),
+    walk(Rs, Cs, Passed0, Failed0, Left, Matches0),
+    (   S == "FAIL" -> Passed = Passed0, Failed is Failed0 + 1
+    ;   Passed = [C|Passed0], Failed = Failed0 ),
+    (   M == true -> Matches = Matches0 ; Matches = false ).
+
+count(List, X, N) :- aggregate_all(count, member(X, List), N).
+
+analyse(Lines, Classes, Status, Seconds, Report) :-
     sections(Lines, none, Tagged),
     phase(Tagged, wellformedness, WF, WFUnparsed),
     phase(Tagged, verification, VR, VRUnparsed),
@@ -110,11 +149,13 @@ analyse(Lines, Status, Seconds, Report) :-
     findall(_{phase:"verification", relationship:D}, member(D-"FAIL", VR), F2),
     append(F1, F2, Failures),
     by_kind(WF, VR, Kinds),
+    assurance(VR, Classes, Assurance, ClassesMatch),
+    findall(D, member(D-_, VR), VDs), sort(VDs, DistinctDs), length(DistinctDs, Distinct),
     ( ( stopped_at(Tagged, wellformedness, SD) -> StopPhase = "well-formedness"
       ; stopped_at(Tagged, verification, SD) -> StopPhase = "verification" )
     -> Stopped = _{phase: StopPhase, relationship: SD}
     ;  Stopped = null ),
-    reasons(Status, Errors, DirFailed, Problems, Failures, WF, VR, NApp, Stopped, Reasons0),
+    reasons(Status, Errors, DirFailed, Problems, Failures, WF, VR, NApp, Stopped, ClassesMatch, Classes, Reasons0),
     length(WF, NWF), length(VR, NVR),
     ( VR \== [], NVR < NWF
     -> format(string(Incomplete), "verification incomplete: ~w of ~w relationships checked", [NVR, NWF]),
@@ -134,6 +175,8 @@ analyse(Lines, Status, Seconds, Report) :-
                 seconds: Seconds,
                 collected: _{ languages: NLang, files: NFiles, membership_tests: NMember,
                               functions: NFun, function_applications: NApp },
+                distinct_relationships: Distinct,
+                assurance: Assurance,
                 wellformedness: WFDict,
                 verification: VRDict,
                 by_kind: Kinds,
@@ -158,7 +201,7 @@ by_kind(WF, VR, Kinds) :-
               aggregate_all(count, ( ( member(D-"FAIL", WF) ; member(D-"FAIL", VR) ), kind(D, K) ), F) ),
             Kinds).
 
-reasons(Status, Errors, DirFailed, Problems, Failures, WF, VR, NApp, Stopped, Reasons) :-
+reasons(Status, Errors, DirFailed, Problems, Failures, WF, VR, NApp, Stopped, ClassesMatch, Classes, Reasons) :-
     findall(R,
       ( Status =\= 0, format(string(R), "swipl exited with status ~w", [Status])
       ; Stopped \== null,
@@ -170,6 +213,8 @@ reasons(Status, Errors, DirFailed, Problems, Failures, WF, VR, NApp, Stopped, Re
       ; WF == [], R = "no well-formedness results"
       ; VR == [], R = "no verification results"
       ; NApp == null, R = "summary missing; collection did not complete"
+      ; Classes == [], R = "no classification of the checks"
+      ; ClassesMatch == false, R = "classification does not match the run"
       ), Reasons).
 
 % Markdown summary (also printed to the console)
@@ -187,6 +232,18 @@ markdown(S, R) :-
     W = R.wellformedness, V = R.verification,
     format(S, "| Well-formedness | ~w | ~w | ~w |~n", [W.checked, W.passed, W.failed]),
     format(S, "| Verification | ~w | ~w | ~w |~n~n", [V.checked, V.passed, V.failed]),
+    As = R.assurance,
+    format(S, "### What the ~w checks actually did~n~n", [As.total]),
+    format(S, "| Result | Checks |~n|---|---:|~n", []),
+    format(S, "| Really checked | ~w |~n", [As.checked]),
+    format(S, "| Really checked, some foreign checks skipped | ~w |~n", [As.partly_checked]),
+    format(S, "| Skipped: foreign (Java, Python, Haskell) checks only, nothing ran | ~w |~n", [As.skipped]),
+    format(S, "| File parsed, nothing else checked | ~w |~n", [As.parsed_only]),
+    format(S, "| File read, nothing else checked | ~w |~n", [As.read_only]),
+    format(S, "| Declaration only, nothing to run | ~w |~n", [As.declaration]),
+    format(S, "| Failed | ~w |~n", [As.failed]),
+    format(S, "| Not reached | ~w |~n~n", [As.not_run]),
+    format(S, "Distinct relationships: ~w (checks include repeats).~n~n", [R.distinct_relationships]),
     format(S, "<details><summary>Relationships by kind</summary>~n~n| Kind | Relationships | Failed |~n|---|---:|---:|~n", []),
     forall(member(K, R.by_kind), format(S, "| `~w` | ~w | ~w |~n", [K.kind, K.relationships, K.failed])),
     format(S, "~n</details>~n~n", []),
