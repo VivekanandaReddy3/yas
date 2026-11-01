@@ -1,0 +1,23 @@
+[
+ {
+  "commit": "068f005184a9ea75503339a1a50d5c5999ff91d1",
+  "date": "2026-11-01",
+  "result": "PASS",
+  "real_percent": 65.4,
+  "really_checked": 1504,
+  "runnable": 2299,
+  "seconds": 16,
+  "assurance": {
+   "checked": 1471,
+   "declaration": 397,
+   "failed": 0,
+   "loaded": 220,
+   "not_run": 0,
+   "parsed_only": 30,
+   "partly_checked": 33,
+   "read_only": 542,
+   "skipped": 3,
+   "total": 2696
+  }
+ }
+]
