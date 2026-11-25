@@ -1,0 +1,25 @@
+# Toolchain for Ueber's verification with the foreign checks enabled (ffi mode):
+# the pinned SWI-Prolog image (see Dockerfile) plus Java, Haskell and Python.
+#
+#   docker build -f Dockerfile.ffi -t yas-ffi .
+#   docker run --rm yas-ffi
+#
+# The Debian packages come from the base image's release (Debian 12 for
+# swipl:10.0.2); .github/ci/ueber-verify-ffi.sh records their versions.
+# The ANTLR Python runtime must match the ANTLR tool that generated the
+# parsers (lib/Java/antlr-4.5.3-complete.jar).
+ARG SWI_VERSION=10.0.2
+FROM swipl:${SWI_VERSION}
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      default-jdk-headless \
+      ghc libghc-hunit-dev libghc-syb-dev \
+      python3 python3-pip python3-pygraphviz \
+ && rm -rf /var/lib/apt/lists/* \
+ && pip3 install --no-cache-dir --break-system-packages antlr4-python3-runtime==4.5.3
+
+WORKDIR /yas
+COPY . /yas
+
+CMD ["bash", ".github/ci/ueber-verify-ffi.sh"]

@@ -167,10 +167,12 @@ analyse(Lines, Classes, Status, Seconds, Report) :-
     Major is V // 10000, Minor is (V // 100) mod 100, Patch is V mod 100,
     format(string(SWI), "~w.~w.~w", [Major, Minor, Patch]),
     ( getenv('GITHUB_SHA', Sha) -> atom_string(Sha, Commit) ; Commit = null ),
+    ( getenv('UEBER_MODE', M), M \== '' -> atom_string(M, Mode) ; Mode = "default" ),
     append(WFUnparsed, VRUnparsed, Unparsed),
     Report = _{ result: Result,
                 reasons: Reasons,
                 swipl: SWI,
+                mode: Mode,
                 commit: Commit,
                 exit_status: Status,
                 seconds: Seconds,
@@ -220,7 +222,8 @@ reasons(Status, Errors, DirFailed, Problems, Failures, WF, VR, NApp, Stopped, Cl
 
 % Markdown summary (also printed to the console)
 markdown(S, R) :-
-    format(S, "## Ueber verification: ~w~n~n", [R.result]),
+    ( R.mode == "default" -> format(S, "## Ueber verification: ~w~n~n", [R.result])
+    ; format(S, "## Ueber verification, ~w mode: ~w~n~n", [R.mode, R.result]) ),
     format(S, "SWI-Prolog ~w", [R.swipl]),
     ( R.commit == null -> true ; sub_atom(R.commit, 0, 7, _, Short), format(S, " · commit `~w`", [Short]) ),
     format(S, " · ~w s~n~n", [R.seconds]),

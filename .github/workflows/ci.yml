@@ -6,6 +6,7 @@ name: CI
 #   7.6.4   oldest swipl image available (the repository targets 7.2.3)
 #   9.3.35  last 9.x image
 #   10.0.2  the pinned version (Dockerfile default)
+# A separate job also runs the Java, Python and Haskell checks (ffi mode).
 
 on:
   push:
@@ -41,6 +42,34 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ueber-verification-swi-${{ matrix.swi }}
+          path: out/
+
+  verify-ffi:
+    # Same verification with the foreign (Java, Python, Haskell) checks enabled,
+    # which default mode skips. Toolchain: Dockerfile.ffi (pinned SWI-Prolog only).
+    name: Ueber verification, ffi mode (SWI-Prolog 10.0.2)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v5
+
+      - name: Build the container
+        run: docker build -f Dockerfile.ffi -t yas-ffi .
+
+      - name: Run Ueber verification in ffi mode
+        run: |
+          docker run --rm -e GITHUB_SHA -v "$PWD/out:/out" yas-ffi \
+            bash .github/ci/ueber-verify-ffi.sh /out
+
+      - name: Publish the report on the run page
+        if: always()
+        run: cat out/ueber-report.md >> "$GITHUB_STEP_SUMMARY" || echo "no report produced"
+
+      - name: Archive the log and the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ueber-verification-ffi
           path: out/
 
   publish:

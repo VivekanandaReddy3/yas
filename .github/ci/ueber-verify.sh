@@ -8,6 +8,8 @@
 # decides the result; see there for what counts as a failure.
 #
 # Usage: ueber-verify.sh [OUTDIR]   (default: current directory)
+# UEBER_MODE=ffi runs the foreign (Java, Python, Haskell) checks as well; the
+# components must have been built first (see ueber-verify-ffi.sh).
 # Writes OUTDIR/ueber-verification.log, ueber-classes.tsv, ueber-report.json,
 # ueber-report.md.
 
@@ -21,7 +23,8 @@ swipl --version
 start=$(date +%s)
 # Same as the Makefile's verbose target; called directly because the swipl
 # images do not ship make (and old ones cannot apt-get it any more).
-swipl -q -f main.pro -- verbose < /dev/null > "$log" 2>&1
+# shellcheck disable=SC2086  # UEBER_MODE is empty or a single word
+swipl -q -f main.pro -- ${UEBER_MODE:-} verbose < /dev/null > "$log" 2>&1
 status=$?
 seconds=$(( $(date +%s) - start ))
 
