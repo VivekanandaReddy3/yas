@@ -29,7 +29,8 @@ status=$?
 seconds=$(( $(date +%s) - start ))
 
 classes="$out/ueber-classes.tsv"
-swipl -q -f main.pro -g "['$here/ueber-classify.pl'],classify('$classes'),halt" -- session \
+# shellcheck disable=SC2086
+swipl -q -f main.pro -g "['$here/ueber-classify.pl'],classify('$classes'),halt" -- ${UEBER_MODE:-} session \
   < /dev/null > "$out/ueber-classify.log" 2>&1
 
 swipl "$here/ueber-report.pl" "$log" "$status" "$seconds" "$out" "$classes"

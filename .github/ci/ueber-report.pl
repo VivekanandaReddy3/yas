@@ -113,6 +113,7 @@ assurance(VR, Classes, Dict, Matches) :-
     walk(VR, Classes, Passed, Failed, Left, Matches),
     count(Passed, "checked", Checked),
     count(Passed, "partly_checked", Partly),
+    count(Passed, "foreign_checked", Foreign),
     count(Passed, "skipped", Skipped),
     count(Passed, "loaded", Loaded),
     count(Passed, "parsed_only", Parsed),
@@ -120,7 +121,12 @@ assurance(VR, Classes, Dict, Matches) :-
     count(Passed, "declaration", Decl),
     length(Left, NotRun),
     length(Classes, Total),
-    Dict = _{ checked: Checked, partly_checked: Partly, skipped: Skipped,
+    % Same share as the report page (health-page.py): really checked over
+    % all checks except declarations.
+    Real is Checked + Partly + Foreign,
+    Runnable is Total - Decl,
+    Dict = _{ checked: Checked, partly_checked: Partly, foreign_checked: Foreign, skipped: Skipped,
+              really_checked: Real, runnable: Runnable,
               loaded: Loaded, parsed_only: Parsed, read_only: Read, declaration: Decl,
               failed: Failed, not_run: NotRun, total: Total }.
 
@@ -238,10 +244,16 @@ markdown(S, R) :-
     format(S, "| Verification | ~w | ~w | ~w |~n~n", [V.checked, V.passed, V.failed]),
     As = R.assurance,
     format(S, "### What the ~w checks actually did~n~n", [As.total]),
+    ( As.runnable > 0 -> Share is 100 * As.really_checked / As.runnable ; Share = 0 ),
+    format(S, "Really checked: ~w of ~w runnable checks (~1f%).~n~n", [As.really_checked, As.runnable, Share]),
     format(S, "| Result | Checks |~n|---|---:|~n", []),
-    format(S, "| Really checked | ~w |~n", [As.checked]),
-    format(S, "| Really checked, some foreign checks skipped | ~w |~n", [As.partly_checked]),
-    format(S, "| Skipped: foreign (Java, Python, Haskell) checks only, nothing ran | ~w |~n", [As.skipped]),
+    (   R.mode == "ffi"
+    ->  format(S, "| Really checked, Prolog only | ~w |~n", [As.checked]),
+        format(S, "| Really checked, including Java, Python or Haskell code | ~w |~n", [As.foreign_checked])
+    ;   format(S, "| Really checked | ~w |~n", [As.checked]),
+        format(S, "| Really checked, some foreign checks skipped | ~w |~n", [As.partly_checked]),
+        format(S, "| Skipped: foreign (Java, Python, Haskell) checks only, nothing ran | ~w |~n", [As.skipped])
+    ),
     format(S, "| Prolog source loaded, nothing else checked | ~w |~n", [As.loaded]),
     format(S, "| File parsed, nothing else checked | ~w |~n", [As.parsed_only]),
     format(S, "| File read, nothing else checked | ~w |~n", [As.read_only]),

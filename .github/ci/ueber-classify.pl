@@ -15,9 +15,13 @@
 %   read_only        only succeed, and reading the text file is the whole check
 %   declaration      nothing to run (language, function, ...), or checked by the
 %                    matching notElementOf
+% In ffi mode (Ueber's mode(ffi), i.e. "ffi" among the arguments), the foreign
+% checks do run, so partly_checked and skipped do not occur; instead:
+%   foreign_checked  a check ran that includes Java, Python or Haskell code
 %
 % Usage (after main.pro has loaded everything, without running verification):
 %   swipl -q -f main.pro -g "['.github/ci/ueber-classify.pl'],classify('FILE'),halt" -- session
+% (add ffi before session to classify an ffi-mode run)
 % Writes one line per declaration, in verification order:
 %   CLASS<TAB>DIRECTORY<TAB>DECLARATION
 
@@ -53,7 +57,8 @@ class(_, _, declaration).
 
 tests_class(L, Ps, C) :-
     partition_tests(Ps, Real, Foreign),
-    (   Real \== [], Foreign \== [] -> C = partly_checked
+    (   Foreign \== [], mode(ffi) -> C = foreign_checked
+    ;   Real \== [], Foreign \== [] -> C = partly_checked
     ;   Real \== [] -> C = checked
     ;   Foreign \== [] -> C = skipped
     ;   languageTowardsBase(L, prolog(text)) -> C = loaded
