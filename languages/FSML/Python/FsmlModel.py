@@ -17,7 +17,6 @@ class Fsm():
         self.current = id
         return self
     def addTransition(self, event, action, target):
-        if event in self.stateObject['transitions']: raise FsmlDeterminismException;
         self.stateObject['transitions'][event] += \
           [(action, self.current if target is None else target)]
         return self
