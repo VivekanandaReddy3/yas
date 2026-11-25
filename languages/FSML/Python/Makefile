@@ -13,19 +13,19 @@ generate:
 	java -cp .:../../../lib/Java/antlr-4.5.3-complete.jar org.antlr.v4.Tool Fsml.g4
 
 run:
-	python FsmlToJSON.py ../sample.fsml sample.json
-	python FsmlChecker.py sample.json
-	python FsmlInterpreter.py sample.json sample.input sample.output
-	python FsmlCGenerator.py sample.json Turnstile
-	python FsmlPythonGenerator.py sample.json
-	python FsmlToDot.py sample.json dot/sample.dot
+	python3 FsmlToJSON.py ../sample.fsml sample.json
+	python3 FsmlChecker.py sample.json
+	python3 FsmlInterpreter.py sample.json sample.input sample.output
+	python3 FsmlCGenerator.py sample.json Turnstile
+	python3 FsmlPythonGenerator.py sample.json
+	python3 FsmlToDot.py sample.json dot/sample.dot
 	cd dot; dot -Tpdf sample.dot -o sample.pdf
 
 compile:
 	cd generated; make
 
 test:
-	python -B FsmlTest.py
+	python3 -B FsmlTest.py
 
 clean:
 	@rm -rf *.pyc

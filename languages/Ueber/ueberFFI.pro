@@ -70,7 +70,7 @@ python(Module, [This], [L], [], [X], []) :-
     writeTmpFile(F, L, X),
 
     % Run python script on file
-    atomic_list_concat(['python ', This, '/', Module, '.py ', F], RunCommand),
+    atomic_list_concat(['python3 ', This, '/', Module, '.py ', F], RunCommand),
     !,
     shell(RunCommand, ExitRun),
     ExitRun == 0. 
@@ -88,7 +88,7 @@ python(Module, [This], [L1], [L2], [X1], [X2]) :-
     tmpFilename(L2, F2),
     
     % Run python script on file
-    atomic_list_concat(['python ', This, '/', Module, '.py ', F1, ' ', F2], RunCommand),
+    atomic_list_concat(['python3 ', This, '/', Module, '.py ', F1, ' ', F2], RunCommand),
     !,
     shell(RunCommand, ExitRun),
     ExitRun == 0,
