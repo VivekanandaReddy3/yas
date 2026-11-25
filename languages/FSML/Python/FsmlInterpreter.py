@@ -5,7 +5,7 @@ import sys
 # END ...
 def run(fsm, input):
     # Determine initial state
-    for id, [decl] in fsm.iteritems():
+    for id, [decl] in fsm.items():
         if decl["initial"]:
             current = decl
             break

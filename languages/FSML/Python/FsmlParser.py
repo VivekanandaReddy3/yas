@@ -1,32 +1,30 @@
 # Generated from Fsml.g4 by ANTLR 4.5.3
 # encoding: utf-8
-from __future__ import print_function
 from antlr4 import *
 from io import StringIO
 
 from FsmlModel import Fsm
 def serializedATN():
     with StringIO() as buf:
-        buf.write(u"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3")
-        buf.write(u"\13;\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
-        buf.write(u"\3\2\3\2\3\2\6\2\22\n\2\r\2\16\2\23\3\2\3\2\3\3\3\3\3")
-        buf.write(u"\3\5\3\33\n\3\3\3\3\3\3\3\3\3\3\3\7\3\"\n\3\f\3\16\3")
-        buf.write(u"%\13\3\3\3\3\3\3\4\3\4\3\4\5\4,\n\4\3\4\3\4\5\4\60\n")
-        buf.write(u"\4\3\4\3\4\3\4\3\5\3\5\3\6\3\6\3\7\3\7\3\7\2\2\b\2\4")
-        buf.write(u"\6\b\n\f\2\29\2\16\3\2\2\2\4\27\3\2\2\2\6(\3\2\2\2\b")
-        buf.write(u"\64\3\2\2\2\n\66\3\2\2\2\f8\3\2\2\2\16\17\b\2\1\2\17")
-        buf.write(u"\21\b\2\1\2\20\22\5\4\3\2\21\20\3\2\2\2\22\23\3\2\2\2")
-        buf.write(u"\23\21\3\2\2\2\23\24\3\2\2\2\24\25\3\2\2\2\25\26\7\2")
-        buf.write(u"\2\3\26\3\3\2\2\2\27\32\b\3\1\2\30\31\7\3\2\2\31\33\b")
-        buf.write(u"\3\1\2\32\30\3\2\2\2\32\33\3\2\2\2\33\34\3\2\2\2\34\35")
-        buf.write(u"\7\4\2\2\35\36\5\b\5\2\36\37\b\3\1\2\37#\7\5\2\2 \"\5")
-        buf.write(u"\6\4\2! \3\2\2\2\"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$&\3\2")
-        buf.write(u"\2\2%#\3\2\2\2&\'\7\6\2\2\'\5\3\2\2\2(+\5\n\6\2)*\7\7")
-        buf.write(u"\2\2*,\5\f\7\2+)\3\2\2\2+,\3\2\2\2,/\3\2\2\2-.\7\b\2")
-        buf.write(u"\2.\60\5\b\5\2/-\3\2\2\2/\60\3\2\2\2\60\61\3\2\2\2\61")
-        buf.write(u"\62\7\t\2\2\62\63\b\4\1\2\63\7\3\2\2\2\64\65\7\n\2\2")
-        buf.write(u"\65\t\3\2\2\2\66\67\7\n\2\2\67\13\3\2\2\289\7\n\2\29")
-        buf.write(u"\r\3\2\2\2\7\23\32#+/")
+        buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\13")
+        buf.write(";\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2")
+        buf.write("\3\2\3\2\6\2\22\n\2\r\2\16\2\23\3\2\3\2\3\3\3\3\3\3\5")
+        buf.write("\3\33\n\3\3\3\3\3\3\3\3\3\3\3\7\3\"\n\3\f\3\16\3%\13\3")
+        buf.write("\3\3\3\3\3\4\3\4\3\4\5\4,\n\4\3\4\3\4\5\4\60\n\4\3\4\3")
+        buf.write("\4\3\4\3\5\3\5\3\6\3\6\3\7\3\7\3\7\2\2\b\2\4\6\b\n\f\2")
+        buf.write("\29\2\16\3\2\2\2\4\27\3\2\2\2\6(\3\2\2\2\b\64\3\2\2\2")
+        buf.write("\n\66\3\2\2\2\f8\3\2\2\2\16\17\b\2\1\2\17\21\b\2\1\2\20")
+        buf.write("\22\5\4\3\2\21\20\3\2\2\2\22\23\3\2\2\2\23\21\3\2\2\2")
+        buf.write("\23\24\3\2\2\2\24\25\3\2\2\2\25\26\7\2\2\3\26\3\3\2\2")
+        buf.write("\2\27\32\b\3\1\2\30\31\7\3\2\2\31\33\b\3\1\2\32\30\3\2")
+        buf.write("\2\2\32\33\3\2\2\2\33\34\3\2\2\2\34\35\7\4\2\2\35\36\5")
+        buf.write("\b\5\2\36\37\b\3\1\2\37#\7\5\2\2 \"\5\6\4\2! \3\2\2\2")
+        buf.write("\"%\3\2\2\2#!\3\2\2\2#$\3\2\2\2$&\3\2\2\2%#\3\2\2\2&\'")
+        buf.write("\7\6\2\2\'\5\3\2\2\2(+\5\n\6\2)*\7\7\2\2*,\5\f\7\2+)\3")
+        buf.write("\2\2\2+,\3\2\2\2,/\3\2\2\2-.\7\b\2\2.\60\5\b\5\2/-\3\2")
+        buf.write("\2\2/\60\3\2\2\2\60\61\3\2\2\2\61\62\7\t\2\2\62\63\b\4")
+        buf.write("\1\2\63\7\3\2\2\2\64\65\7\n\2\2\65\t\3\2\2\2\66\67\7\n")
+        buf.write("\2\2\67\13\3\2\2\289\7\n\2\29\r\3\2\2\2\7\23\32#+/")
         return buf.getvalue()
 
 
@@ -40,12 +38,12 @@ class FsmlParser ( Parser ):
 
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ u"<INVALID>", u"'initial'", u"'state'", u"'{'", u"'}'", 
-                     u"'/'", u"'->'", u"';'" ]
+    literalNames = [ "<INVALID>", "'initial'", "'state'", "'{'", "'}'", 
+                     "'/'", "'->'", "';'" ]
 
-    symbolicNames = [ u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
-                      u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
-                      u"NAME", u"WS" ]
+    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
+                      "NAME", "WS" ]
 
     RULE_fsm = 0
     RULE_statedecl = 1
@@ -54,8 +52,8 @@ class FsmlParser ( Parser ):
     RULE_event = 4
     RULE_action = 5
 
-    ruleNames =  [ u"fsm", u"statedecl", u"transition", u"stateid", u"event", 
-                   u"action" ]
+    ruleNames =  [ "fsm", "statedecl", "transition", "stateid", "event", 
+                   "action" ]
 
     EOF = Token.EOF
     T__0=1
@@ -68,8 +66,8 @@ class FsmlParser ( Parser ):
     NAME=8
     WS=9
 
-    def __init__(self, input):
-        super(FsmlParser, self).__init__(input)
+    def __init__(self, input:TokenStream):
+        super().__init__(input)
         self.checkVersion("4.5.3")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
@@ -78,14 +76,14 @@ class FsmlParser ( Parser ):
 
     class FsmContext(ParserRuleContext):
 
-        def __init__(self, parser, parent=None, invokingState=-1):
-            super(FsmlParser.FsmContext, self).__init__(parent, invokingState)
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
             self.parser = parser
 
         def EOF(self):
             return self.getToken(FsmlParser.EOF, 0)
 
-        def statedecl(self, i=None):
+        def statedecl(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(FsmlParser.StatedeclContext)
             else:
@@ -95,12 +93,12 @@ class FsmlParser ( Parser ):
         def getRuleIndex(self):
             return FsmlParser.RULE_fsm
 
-        def enterRule(self, listener):
-            if hasattr(listener, "enterFsm"):
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterFsm" ):
                 listener.enterFsm(self)
 
-        def exitRule(self, listener):
-            if hasattr(listener, "exitFsm"):
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitFsm" ):
                 listener.exitFsm(self)
 
 
@@ -139,8 +137,8 @@ class FsmlParser ( Parser ):
 
     class StatedeclContext(ParserRuleContext):
 
-        def __init__(self, parser, parent=None, invokingState=-1):
-            super(FsmlParser.StatedeclContext, self).__init__(parent, invokingState)
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
             self.parser = parser
             self._stateid = None # StateidContext
 
@@ -148,7 +146,7 @@ class FsmlParser ( Parser ):
             return self.getTypedRuleContext(FsmlParser.StateidContext,0)
 
 
-        def transition(self, i=None):
+        def transition(self, i:int=None):
             if i is None:
                 return self.getTypedRuleContexts(FsmlParser.TransitionContext)
             else:
@@ -158,12 +156,12 @@ class FsmlParser ( Parser ):
         def getRuleIndex(self):
             return FsmlParser.RULE_statedecl
 
-        def enterRule(self, listener):
-            if hasattr(listener, "enterStatedecl"):
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterStatedecl" ):
                 listener.enterStatedecl(self)
 
-        def exitRule(self, listener):
-            if hasattr(listener, "exitStatedecl"):
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitStatedecl" ):
                 listener.exitStatedecl(self)
 
 
@@ -214,8 +212,8 @@ class FsmlParser ( Parser ):
 
     class TransitionContext(ParserRuleContext):
 
-        def __init__(self, parser, parent=None, invokingState=-1):
-            super(FsmlParser.TransitionContext, self).__init__(parent, invokingState)
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
             self.parser = parser
             self._event = None # EventContext
             self._action = None # ActionContext
@@ -236,12 +234,12 @@ class FsmlParser ( Parser ):
         def getRuleIndex(self):
             return FsmlParser.RULE_transition
 
-        def enterRule(self, listener):
-            if hasattr(listener, "enterTransition"):
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterTransition" ):
                 listener.enterTransition(self)
 
-        def exitRule(self, listener):
-            if hasattr(listener, "exitTransition"):
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitTransition" ):
                 listener.exitTransition(self)
 
 
@@ -287,8 +285,8 @@ class FsmlParser ( Parser ):
 
     class StateidContext(ParserRuleContext):
 
-        def __init__(self, parser, parent=None, invokingState=-1):
-            super(FsmlParser.StateidContext, self).__init__(parent, invokingState)
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
             self.parser = parser
 
         def NAME(self):
@@ -297,12 +295,12 @@ class FsmlParser ( Parser ):
         def getRuleIndex(self):
             return FsmlParser.RULE_stateid
 
-        def enterRule(self, listener):
-            if hasattr(listener, "enterStateid"):
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterStateid" ):
                 listener.enterStateid(self)
 
-        def exitRule(self, listener):
-            if hasattr(listener, "exitStateid"):
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitStateid" ):
                 listener.exitStateid(self)
 
 
@@ -326,8 +324,8 @@ class FsmlParser ( Parser ):
 
     class EventContext(ParserRuleContext):
 
-        def __init__(self, parser, parent=None, invokingState=-1):
-            super(FsmlParser.EventContext, self).__init__(parent, invokingState)
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
             self.parser = parser
 
         def NAME(self):
@@ -336,12 +334,12 @@ class FsmlParser ( Parser ):
         def getRuleIndex(self):
             return FsmlParser.RULE_event
 
-        def enterRule(self, listener):
-            if hasattr(listener, "enterEvent"):
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterEvent" ):
                 listener.enterEvent(self)
 
-        def exitRule(self, listener):
-            if hasattr(listener, "exitEvent"):
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitEvent" ):
                 listener.exitEvent(self)
 
 
@@ -365,8 +363,8 @@ class FsmlParser ( Parser ):
 
     class ActionContext(ParserRuleContext):
 
-        def __init__(self, parser, parent=None, invokingState=-1):
-            super(FsmlParser.ActionContext, self).__init__(parent, invokingState)
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
             self.parser = parser
 
         def NAME(self):
@@ -375,12 +373,12 @@ class FsmlParser ( Parser ):
         def getRuleIndex(self):
             return FsmlParser.RULE_action
 
-        def enterRule(self, listener):
-            if hasattr(listener, "enterAction"):
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterAction" ):
                 listener.enterAction(self)
 
-        def exitRule(self, listener):
-            if hasattr(listener, "exitAction"):
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitAction" ):
                 listener.exitAction(self)
 
 

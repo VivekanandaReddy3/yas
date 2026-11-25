@@ -6,7 +6,7 @@ all:
 	make test
 
 install-very-specific:
-	sudo pip install --user antlr4-python2-runtime
+	sudo pip install --user antlr4-python3-runtime==4.5.3
 	sudo pip install --user pygraphviz --install-option="--include-path=/usr/local/include" --install-option="--library-path=/usr/local/lib"
 
 generate:

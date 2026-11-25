@@ -11,13 +11,13 @@ def generateC(fsm):
         actions = set()
         transitions = list()
         # Aggregate data structures
-        for source, [statedecl] in fsm.iteritems():
+        for source, [statedecl] in fsm.items():
             ts = list()
             transitions.append((source, ts))
             states.add(source)
             if statedecl["initial"]:
                 initial = source
-            for event, [(action, target)] in statedecl["transitions"].iteritems():
+            for event, [(action, target)] in statedecl["transitions"].items():
                 events.add(event)                    
                 if action is not None: actions.add(action)
                 ts.append((event, action, target))

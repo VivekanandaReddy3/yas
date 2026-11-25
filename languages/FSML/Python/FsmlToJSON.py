@@ -16,7 +16,7 @@ def parse(path):
 
 def main():
     fsm = parse(sys.argv[1])
-    open(sys.argv[2], 'w').write(json.dumps(fsm))
+    open(sys.argv[2], 'w').write(json.dumps(fsm, sort_keys=True))
     
 if __name__ == '__main__':
     main()

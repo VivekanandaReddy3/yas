@@ -10,26 +10,26 @@ def ok(fsm):
             reachableStates ] : fun(fsm)
 
 def distinctStateIds(fsm):
-    for state, decls in fsm.iteritems():
+    for state, decls in fsm.items():
         if not len(decls) == 1: raise FsmlDistinctIdsException()
 
 def singleInitialState(fsm):
-    initials = [initial for initial, [decl] in fsm.iteritems() if decl["initial"]]
+    initials = [initial for initial, [decl] in fsm.items() if decl["initial"]]
     if not len(initials) == 1: raise FsmlSingleInitialException()
 
 def deterministicTransitions(fsm):
-    for state, [decl] in fsm.iteritems():
-        for event, transitions in decl["transitions"].iteritems():
+    for state, [decl] in fsm.items():
+        for event, transitions in decl["transitions"].items():
             if not len(transitions) == 1: raise FsmlDeterminismException()
     
 def resolvableTargetStates(fsm):
-    for _, [decl] in fsm.iteritems():
-        for _, transitions in decl["transitions"].iteritems():
+    for _, [decl] in fsm.items():
+        for _, transitions in decl["transitions"].items():
             for (_, target) in transitions:
                 if not target in fsm: raise FsmlResolutionException()
 
 def reachableStates(fsm):
-    for initial, [decl] in fsm.iteritems():
+    for initial, [decl] in fsm.items():
         if decl["initial"]:
             reachables = set([initial])
             chaseStates(initial, fsm, reachables)
@@ -39,7 +39,7 @@ def reachableStates(fsm):
 def chaseStates(source, fsm, states): # ...
 # BEGIN ...
     for decl in fsm[source]:
-        for _, [(_, target)] in decl["transitions"].iteritems():
+        for _, [(_, target)] in decl["transitions"].items():
             if not target in states:
                 states.add(target)
                 chaseStates(target, fsm, states)

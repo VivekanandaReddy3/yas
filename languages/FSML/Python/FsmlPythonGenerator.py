@@ -7,10 +7,10 @@ def generatePython(fsm):
         actions = set() # Accumulate actions for handler class
         transitions = [] # Accumulate transitions for stepper class
         # Map model to data structure needed for templates
-        for fromState, [statedecl] in fsm.iteritems():
+        for fromState, [statedecl] in fsm.items():
             if statedecl["initial"]:
                 initialState = fromState
-            for input, [(action, toState)] in statedecl["transitions"].iteritems():
+            for input, [(action, toState)] in statedecl["transitions"].items():
                 if action is not None: actions.add(action)
                 transitions.insert(0,(fromState, input, action, toState))
         # Look up templates
