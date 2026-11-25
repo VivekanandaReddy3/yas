@@ -4,14 +4,23 @@
 #   docker build -f Dockerfile.ffi -t yas-ffi .
 #   docker run --rm yas-ffi
 #
-# The Debian packages come from the base image's release (Debian 12 for
-# swipl:10.0.2); .github/ci/ueber-verify-ffi.sh records their versions.
-# The ANTLR Python runtime must match the ANTLR tool that generated the
-# parsers (lib/Java/antlr-4.5.3-complete.jar).
-ARG SWI_VERSION=10.0.2
-FROM swipl:${SWI_VERSION}
+# Everything is pinned, so the image can be rebuilt with the same versions
+# later, also after Debian 12 has been retired:
+# - the base image by digest (swipl:10.0.2, Debian 12);
+# - the Debian packages by installing them from snapshot.debian.org at the
+#   date the base image was built from, which the image itself records in
+#   /etc/apt/sources.list.d/debian.sources (a commented snapshot URL above
+#   each URIs line);
+# - the ANTLR Python runtime by version; it must match the ANTLR tool that
+#   generated the parsers (lib/Java/antlr-4.5.3-complete.jar).
+# .github/ci/ueber-verify-ffi.sh records the installed versions.
+FROM swipl:10.0.2@sha256:2723fefd35116f92f68da22a487b1b01b584ac0b4b81fcd971c7ab2222f5d3e7
 
-RUN apt-get update \
+RUN src=/etc/apt/sources.list.d/debian.sources \
+ && grep -q '^# http://snapshot.debian.org/' "$src" \
+ && sed -i -E '/^URIs: /d; s|^# (http://snapshot\.debian\.org/archive/.*)$|URIs: \1|' "$src" \
+ && cat "$src" \
+ && apt-get -o Acquire::Check-Valid-Until=false update \
  && apt-get install -y --no-install-recommends \
       default-jdk-headless \
       ghc libghc-hunit-dev libghc-syb-dev \

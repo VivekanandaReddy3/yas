@@ -20,13 +20,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        swi: ["7.6.4", "9.3.35", "10.0.2"]
+        # Each image pinned by digest (see Dockerfile).
+        include:
+          - swi: "7.6.4"
+            digest: sha256:a5d54cdc14af9683d8576bdffa01cabba558f0ec28c8971f0cba88b3ee8a4729
+          - swi: "9.3.35"
+            digest: sha256:a80256745cc91e560b1cd78959aab7993827768acdff51f71a3f8799dd7c23db
+          - swi: "10.0.2"
+            digest: sha256:2723fefd35116f92f68da22a487b1b01b584ac0b4b81fcd971c7ab2222f5d3e7
     steps:
       - name: Check out the repository
         uses: actions/checkout@v5
 
       - name: Build the container
-        run: docker build --build-arg SWI_VERSION=${{ matrix.swi }} -t yas:${{ matrix.swi }} .
+        run: |
+          docker build --build-arg SWI_VERSION=${{ matrix.swi }} \
+            --build-arg SWI_DIGEST=${{ matrix.digest }} -t yas:${{ matrix.swi }} .
 
       - name: Run Ueber verification
         run: |
